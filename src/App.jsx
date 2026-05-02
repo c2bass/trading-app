@@ -1,39 +1,38 @@
 import { useEffect, useState } from 'react'
 import { supabase, fetchTrades } from './lib/supabase'
 import Dashboard from './components/Dashboard'
-import AuthForm from './components/AuthForm'
 import TradeForm from './components/TradeForm'
 import './App.css'
 
 export default function App() {
-  // Demo mode - use a default user ID for testing
+  // DEMO MODE - NO LOGIN REQUIRED
   const demoUserId = 'demo-user-001'
-  const [session, setSession] = useState({ user: { id: demoUserId } })
   const [trades, setTrades] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Load trades on mount
     loadTrades()
     setLoading(false)
   }, [])
 
   async function loadTrades() {
     try {
-      const data = await fetchTrades(session.user.id, 200)
-      setTrades(data)
+      const data = await fetchTrades(demoUserId, 200)
+      setTrades(data || [])
     } catch (err) {
       console.error('Failed to load trades:', err)
+      setTrades([])
     }
   }
 
   async function handleAddTrade(trade) {
     try {
-      await supabase.from('trades').insert({
+      const { error } = await supabase.from('trades').insert({
         ...trade,
-        user_id: session.user.id,
+        user_id: demoUserId,
       })
+      if (error) throw error
       await loadTrades()
       setShowForm(false)
     } catch (err) {
@@ -44,15 +43,12 @@ export default function App() {
   async function handleDeleteTrade(id) {
     if (!confirm('Delete this trade?')) return
     try {
-      await supabase.from('trades').delete().eq('id', id)
+      const { error } = await supabase.from('trades').delete().eq('id', id)
+      if (error) throw error
       setTrades(prev => prev.filter(t => t.id !== id))
     } catch (err) {
       alert('Error deleting trade: ' + err.message)
     }
-  }
-
-  if (loading) {
-    return <div className="container"><p>Loading...</p></div>
   }
 
   return (
@@ -85,4 +81,3 @@ export default function App() {
     </div>
   )
 }
-
