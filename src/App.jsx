@@ -11,25 +11,51 @@ export default function App() {
   const [showForm, setShowForm] = useState(false)
 
   useEffect(() => {
-    fetchTrades(demoUserId, 200)
-      .then(data => setTrades(data || []))
-      .catch(err => {
-        console.error('Failed to load trades:', err)
-        setTrades([])
-      })
+    loadTrades()
   }, [])
+
+  async function loadTrades() {
+    try {
+      const data = await fetchTrades(demoUserId, 200)
+      setTrades(data || [])
+    } catch (err) {
+      console.error('Failed to load trades:', err)
+      // Try without user_id filter as fallback
+      try {
+        const { data } = await supabase
+          .from('trades')
+          .select('*')
+          .order('entry_time', { ascending: false })
+          .limit(200)
+        setTrades(data || [])
+      } catch (fallbackErr) {
+        console.error('Fallback also failed:', fallbackErr)
+        setTrades([])
+      }
+    }
+  }
 
   async function handleAddTrade(trade) {
     try {
-      const { error } = await supabase.from('trades').insert({
+      // Insert the trade
+      const { data, error: insertError } = await supabase.from('trades').insert({
         ...trade,
         user_id: demoUserId,
-      })
-      if (error) throw error
-      const data = await fetchTrades(demoUserId, 200)
-      setTrades(data || [])
+      }).select()
+      
+      if (insertError) {
+        console.error('Insert error:', insertError)
+        throw new Error(insertError.message || 'Failed to save trade')
+      }
+      
+      console.log('Trade saved successfully:', data)
+      
+      // Reload trades list
+      await loadTrades()
       setShowForm(false)
+      alert('Trade saved successfully!')
     } catch (err) {
+      console.error('Error adding trade:', err)
       alert('Error: ' + err.message)
     }
   }
