@@ -6,29 +6,18 @@ import TradeForm from './components/TradeForm'
 import './App.css'
 
 export default function App() {
-  const [session, setSession] = useState(null)
+  // Demo mode - use a default user ID for testing
+  const demoUserId = 'demo-user-001'
+  const [session, setSession] = useState({ user: { id: demoUserId } })
   const [trades, setTrades] = useState([])
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      setLoading(false)
-    })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
-    return () => subscription?.unsubscribe()
+    // Load trades on mount
+    loadTrades()
+    setLoading(false)
   }, [])
-
-  useEffect(() => {
-    if (session) {
-      loadTrades()
-    }
-  }, [session])
 
   async function loadTrades() {
     try {
@@ -66,20 +55,10 @@ export default function App() {
     return <div className="container"><p>Loading...</p></div>
   }
 
-  if (!session) {
-    return <AuthForm onAuthChange={() => {}} />
-  }
-
   return (
     <div className="app">
       <header className="header">
         <h1>📊 Trading Journal</h1>
-        <button 
-          onClick={() => supabase.auth.signOut()}
-          className="logout-btn"
-        >
-          Sign Out
-        </button>
       </header>
 
       <main className="container">
