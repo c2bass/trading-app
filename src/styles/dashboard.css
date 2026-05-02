@@ -113,3 +113,153 @@
 .trade-pnl .negative {
   color: var(--negative);
 }
+
+/* Trade buttons styling */
+.trade-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.trade-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-chart {
+  background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn-chart:hover {
+  background: linear-gradient(135deg, #818cf8 0%, #a5b4fc 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.btn-chart:active {
+  transform: translateY(0);
+}
+
+.btn-delete {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #374151;
+  color: #ef4444;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+}
+
+.btn-delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+/* Update trade-row layout */
+.trade-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 16px;
+  background: rgba(31, 41, 55, 0.5);
+  border: 1px solid #374151;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.trade-row:hover {
+  background: rgba(31, 41, 55, 0.8);
+  border-color: #4b5563;
+}
+
+@media (max-width: 768px) {
+  .trade-row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .trade-actions {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .trade-buttons {
+    gap: 6px;
+  }
+
+  .btn-chart {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .btn-delete {
+    min-width: 36px;
+    height: 36px;
+    font-size: 12px;
+  }
+}
+
+/* Adjust the trade-info class */
+.trade-info {
+  min-width: 0;
+}
+
+.trade-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #f3f4f6;
+}
+
+.trade-meta {
+  margin: 0;
+  font-size: 13px;
+  color: #9ca3af;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.trade-time {
+  margin: 8px 0 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.trade-notes {
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  color: #d1d5db;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.trade-pnl p {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  text-align: right;
+}
