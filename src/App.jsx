@@ -16,32 +16,20 @@ export default function App() {
 
   async function loadTrades() {
     try {
-      const data = await fetchTrades(demoUserId, 200)
+      // Fetch all trades (no user_id filter since RLS is disabled and we don't store user_id)
+      const { data, error } = await supabase
+        .from('trades')
+        .select('*')
+        .order('entry_time', { ascending: false })
+        .limit(200)
+      
+      if (error) throw error
       setTrades(data || [])
-    } catch (err) {
-      console.error('Failed to load trades:', err)
-      // Try without user_id filter as fallback
-      try {
-        const { data } = await supabase
-          .from('trades')
-          .select('*')
-          .order('entry_time', { ascending: false })
-          .limit(200)
-        setTrades(data || [])
-      } catch (fallbackErr) {
-        console.error('Fallback also failed:', fallbackErr)
-        setTrades([])
-      }
-    }
-  }
 
   async function handleAddTrade(trade) {
     try {
-      // Insert the trade
-      const { data, error: insertError } = await supabase.from('trades').insert({
-        ...trade,
-        user_id: demoUserId,
-      }).select()
+      // Insert the trade (don't include user_id since RLS is disabled)
+      const { data, error: insertError } = await supabase.from('trades').insert(trade).select()
       
       if (insertError) {
         console.error('Insert error:', insertError)
