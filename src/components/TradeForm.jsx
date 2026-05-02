@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import '../styles/form.css'
 
 const ASSET_CLASSES = ['futures', 'forex', 'indices', 'metals']
@@ -16,8 +18,8 @@ export default function TradeForm({ onSubmit, onCancel }) {
     fees: '0',
     emotion: '',
     notes: '',
-    entry_time: new Date().toISOString().slice(0, 16),
-    exit_time: '',
+    entry_time: new Date(),
+    exit_time: null,
   })
   const [loading, setLoading] = useState(false)
 
@@ -41,8 +43,8 @@ export default function TradeForm({ onSubmit, onCancel }) {
         quantity: parseFloat(formData.quantity),
         fees: parseFloat(formData.fees),
         pnl: parseFloat(pnl.toFixed(2)),
-        entry_time: new Date(formData.entry_time).toISOString(),
-        exit_time: formData.exit_time ? new Date(formData.exit_time).toISOString() : null,
+        entry_time: formData.entry_time ? formData.entry_time.toISOString() : new Date().toISOString(),
+        exit_time: formData.exit_time ? formData.exit_time.toISOString() : null,
         status: 'closed',
       })
     } catch (err) {
@@ -144,20 +146,28 @@ export default function TradeForm({ onSubmit, onCancel }) {
 
       <div className="form-row">
         <div className="form-group">
-          <label>Entry Time</label>
-          <input
-            type="datetime-local"
-            value={formData.entry_time}
-            onChange={(e) => setFormData({...formData, entry_time: e.target.value})}
+          <label>Entry Date & Time</label>
+          <DatePicker
+            selected={formData.entry_time}
+            onChange={(date) => setFormData({...formData, entry_time: date})}
+            showTimeSelect
+            timeIntervals={15}
+            dateFormat="yyyy-MM-dd HH:mm"
+            placeholderText="Select date and time"
+            className="date-picker-input"
           />
         </div>
 
         <div className="form-group">
-          <label>Exit Time</label>
-          <input
-            type="datetime-local"
-            value={formData.exit_time}
-            onChange={(e) => setFormData({...formData, exit_time: e.target.value})}
+          <label>Exit Date & Time</label>
+          <DatePicker
+            selected={formData.exit_time}
+            onChange={(date) => setFormData({...formData, exit_time: date})}
+            showTimeSelect
+            timeIntervals={15}
+            dateFormat="yyyy-MM-dd HH:mm"
+            placeholderText="Select date and time"
+            className="date-picker-input"
           />
         </div>
       </div>
