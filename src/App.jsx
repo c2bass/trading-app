@@ -4,27 +4,20 @@ import Dashboard from './components/Dashboard'
 import TradeForm from './components/TradeForm'
 import './App.css'
 
+// PERMANENT DEMO MODE - NO AUTH, NO LOGIN SCREEN
 export default function App() {
-  // DEMO MODE - NO LOGIN REQUIRED
   const demoUserId = 'demo-user-001'
   const [trades, setTrades] = useState([])
   const [showForm, setShowForm] = useState(false)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadTrades()
-    setLoading(false)
+    fetchTrades(demoUserId, 200)
+      .then(data => setTrades(data || []))
+      .catch(err => {
+        console.error('Failed to load trades:', err)
+        setTrades([])
+      })
   }, [])
-
-  async function loadTrades() {
-    try {
-      const data = await fetchTrades(demoUserId, 200)
-      setTrades(data || [])
-    } catch (err) {
-      console.error('Failed to load trades:', err)
-      setTrades([])
-    }
-  }
 
   async function handleAddTrade(trade) {
     try {
@@ -33,10 +26,11 @@ export default function App() {
         user_id: demoUserId,
       })
       if (error) throw error
-      await loadTrades()
+      const data = await fetchTrades(demoUserId, 200)
+      setTrades(data || [])
       setShowForm(false)
     } catch (err) {
-      alert('Error adding trade: ' + err.message)
+      alert('Error: ' + err.message)
     }
   }
 
@@ -47,35 +41,25 @@ export default function App() {
       if (error) throw error
       setTrades(prev => prev.filter(t => t.id !== id))
     } catch (err) {
-      alert('Error deleting trade: ' + err.message)
+      alert('Error: ' + err.message)
     }
   }
 
   return (
     <div className="app">
       <header className="header">
-        <h1>📊 Trading Journal</h1>
+        <h1>📊 Trading Journal - Demo Mode</h1>
       </header>
-
       <main className="container">
         {!showForm ? (
           <>
-            <button 
-              onClick={() => setShowForm(true)}
-              className="btn-primary"
-            >
+            <button onClick={() => setShowForm(true)} className="btn-primary">
               + Add Trade
             </button>
-            <Dashboard 
-              trades={trades} 
-              onDelete={handleDeleteTrade}
-            />
+            <Dashboard trades={trades} onDelete={handleDeleteTrade} />
           </>
         ) : (
-          <TradeForm 
-            onSubmit={handleAddTrade}
-            onCancel={() => setShowForm(false)}
-          />
+          <TradeForm onSubmit={handleAddTrade} onCancel={() => setShowForm(false)} />
         )}
       </main>
     </div>
